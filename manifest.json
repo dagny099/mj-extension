@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Midjourney Image Tracker",
+  "version": "1.0",
+  "description": "Track and save Midjourney image URLs",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "downloads",
+    "downloads.shelf",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.midjourney.com/*"
+  ],
+  "background": {
+    "service_worker": "src/js/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.midjourney.com/*"],
+      "js": ["src/js/content.js"],
+      "css": ["src/css/content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
