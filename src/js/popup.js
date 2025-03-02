@@ -25,13 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            urlList.innerHTML = urls.map(({ url, timestamp }) => `
-                <div class="url-item">
-                    <img src="${url}" alt="thumbnail" class="thumbnail">
-                    <div class="url-text">${url}</div>
-                    <button class="remove-url" data-url="${url}">×</button>
-                </div>
-            `).join('');
+            urlList.innerHTML = urls.map(({ url, timestamp }) => {
+                // Standardize the URL before displaying
+                const standardizedUrl = standardizeMidjourneyUrl(url);
+                return `
+                    <div class="url-item">
+                        <img src="${standardizedUrl}" alt="thumbnail" class="thumbnail">
+                        <div class="url-text">${standardizedUrl}</div>
+                        <button class="remove-url" data-url="${standardizedUrl}">×</button>
+                    </div>
+                `;
+            }).join('');
         });
     }
     
@@ -39,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     urlList.addEventListener('click', (e) => {
         if (e.target.classList.contains('remove-url')) {
             const url = e.target.dataset.url;
+            // URL is already standardized in the dataset
             chrome.runtime.sendMessage({
                 type: 'REMOVE_URL',
                 url: url

@@ -1,5 +1,13 @@
 // background.js
 
+// Include shared.js in service worker context
+// Since importScripts is only available in service workers
+try {
+    importScripts('shared.js');
+} catch (e) {
+    console.error('Error importing shared.js:', e);
+}
+
 // Store URLs in memory
 let savedUrls = new Set();
 
@@ -14,14 +22,17 @@ chrome.storage.local.get(['savedUrls'], (result) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
         case 'SAVE_URL':
+            // Standardize the URL before checking or saving
+            const standardizedUrl = standardizeMidjourneyUrl(message.url);
+            
             // Check if URL already exists
-            if (savedUrls.has(message.url)) {
+            if (savedUrls.has(standardizedUrl)) {
                 sendResponse({ success: false, message: 'URL already saved' });
                 return true;
             }
 
             // Add new URL with timestamp
-            savedUrls.add(message.url);
+            savedUrls.add(standardizedUrl);
             
             // Save to storage
             chrome.storage.local.set({ 
@@ -48,7 +59,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return true;
 
         case 'REMOVE_URL':
-            savedUrls.delete(message.url);
+            // Standardize the URL before removing
+            const urlToRemove = standardizeMidjourneyUrl(message.url);
+            savedUrls.delete(urlToRemove);
+            
             chrome.storage.local.set({ 
                 savedUrls: Array.from(savedUrls) 
             }, () => {

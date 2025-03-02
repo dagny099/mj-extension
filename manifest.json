@@ -19,8 +19,15 @@
   "content_scripts": [
     {
       "matches": ["https://*.midjourney.com/*"],
-      "js": ["src/js/content.js"],
-      "css": ["src/css/content.css"]
+      "js": ["src/js/shared.js", "src/js/content.js"],
+      "css": ["src/css/content.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/css/*.css", "icons/*.png"],
+      "matches": ["https://*.midjourney.com/*"]
     }
   ],
   "action": {
@@ -35,5 +42,8 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }

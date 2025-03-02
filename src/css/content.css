@@ -1,0 +1,31 @@
+/* content.css */
+
+.mj-bookmark-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+  box-sizing: content-box;
+  margin: 0;
+  line-height: 1;
+  font-size: 16px;
+  text-align: center;
+  width: auto;
+  height: auto;
+}
+
+.mj-bookmark-button.saved {
+  background-color: rgba(76, 175, 80, 0.8);
+}
+
+/* Fix any potential position issues for image containers */
+[data-mj-container] {
+  position: relative;
+}

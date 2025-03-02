@@ -1,172 +1,239 @@
 // content.js
 
-// Utility function to check if an image is from Midjourney
-function isMidjourneyImage(url) {
-    return url.includes('cdn.midjourney.com') && url.match(/[a-f0-9-]{36}/i);
-}
-
 // Keep track of saved URLs
 let savedUrls = new Set();
 
 // Fetch the current list of saved URLs
 function updateSavedUrls(callback) {
-    chrome.runtime.sendMessage({ type: 'GET_URLS' }, (response) => {
-        if (response && response.urls) {
-            // Extract just the URLs from the response
-            savedUrls = new Set(response.urls.map(item => typeof item === 'object' ? item.url : item));
-            
-            if (callback) {
-                callback();
+    try {
+        chrome.runtime.sendMessage({ type: 'GET_URLS' }, (response) => {
+            if (response && response.urls) {
+                // Extract just the URLs from the response and standardize them
+                savedUrls = new Set(response.urls.map(item => {
+                    const url = typeof item === 'object' ? item.url : item;
+                    return standardizeMidjourneyUrl(url);
+                }));
+                
+                if (callback && typeof callback === 'function') {
+                    callback();
+                }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error updating saved URLs:', error);
+    }
 }
 
-// Create and style the bookmark button
+// Create the bookmark button in a way that won't interfere with image clicks
 function createBookmarkButton(img) {
+    if (!img || !img.src) {
+        return null;
+    }
+    
     const button = document.createElement('button');
-    button.className = 'mj-bookmark-button';
+    
+    // Standardize the image URL for comparison
+    const standardizedImgUrl = standardizeMidjourneyUrl(img.src);
     
     // Check if this image is already saved
-    const isAlreadySaved = savedUrls.has(img.src);
+    const isAlreadySaved = savedUrls.has(standardizedImgUrl);
+    
+    // Use CSS classes instead of inline styles
+    button.className = isAlreadySaved ? 'mj-bookmark-button saved' : 'mj-bookmark-button';
     button.textContent = isAlreadySaved ? '✓' : '🔖';
     
-    button.style.cssText = `
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        padding: 5px 10px;
-        background: ${isAlreadySaved ? 'rgba(76, 175, 80, 0.8)' : 'rgba(0, 0, 0, 0.7)'};
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        display: none;
-        z-index: 1000;
-        box-sizing: content-box;
-        margin: 0;
-        line-height: 1;
-        font-size: 16px;
-        text-align: center;
-        transform: none;
-        width: auto;
-        height: auto;
-    `;
-    
-    // Show/hide button on hover - target the image itself
-    img.addEventListener('mouseenter', () => button.style.display = 'block');
-    img.addEventListener('mouseleave', () => button.style.display = 'none');
-    
-    // Also show button when hovering the button itself
-    button.addEventListener('mouseenter', () => button.style.display = 'block');
-    button.addEventListener('mouseleave', () => button.style.display = 'none');
-    
-    // Handle click
-    button.addEventListener('click', (e) => {
-        e.preventDefault();
+    // Handle bookmarking without affecting image clicks
+    button.addEventListener('click', function(e) {
+        // Using function() instead of arrow to avoid "this" binding issues
         e.stopPropagation();
+        e.preventDefault();
         
         if (isAlreadySaved) {
             // If already saved, remove it
             chrome.runtime.sendMessage({
                 type: 'REMOVE_URL',
-                url: img.src
-            }, (response) => {
+                url: standardizedImgUrl // Send standardized URL
+            }, function(response) {
                 if (response && response.success) {
                     button.textContent = '🔖';
-                    button.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                    button.className = 'mj-bookmark-button'; // Remove 'saved' class
                     // Update our local tracking
-                    savedUrls.delete(img.src);
+                    savedUrls.delete(standardizedImgUrl);
                 }
             });
         } else {
             // If not saved, add it
             chrome.runtime.sendMessage({
                 type: 'SAVE_URL',
-                url: img.src,
+                url: standardizedImgUrl, // Send standardized URL
                 timestamp: Date.now()
-            }, (response) => {
+            }, function(response) {
                 if (response && response.success) {
                     button.textContent = '✓';
-                    button.style.backgroundColor = 'rgba(76, 175, 80, 0.8)';
+                    button.className = 'mj-bookmark-button saved'; // Add 'saved' class
                     // Update our local tracking
-                    savedUrls.add(img.src);
+                    savedUrls.add(standardizedImgUrl);
                 }
             });
         }
     });
     
+    // Handle button visibility
+    const showButton = function() { button.style.display = 'block'; };
+    const hideButton = function() { button.style.display = 'none'; };
+    
+    // Add visibility handlers
+    img.addEventListener('mouseenter', showButton);
+    img.addEventListener('mouseleave', hideButton);
+    button.addEventListener('mouseenter', showButton);
+    button.addEventListener('mouseleave', hideButton);
+    
     return button;
 }
 
-// Process each image on the page
+// Add this debugging function to your content.js file
+function analyzeImageStructure() {
+    const images = Array.from(document.querySelectorAll('img')).filter(img => 
+        img.src && isMidjourneyImage(img.src)
+    );
+    
+    console.log(`Found ${images.length} Midjourney images`);
+    
+    // Analyze the first image if available
+    if (images.length > 0) {
+        const img = images[0];
+        console.log('Image analysis:', {
+            src: img.src,
+            standardized: standardizeMidjourneyUrl(img.src),
+            parentElement: img.parentElement.tagName,
+            parentClasses: img.parentElement.className,
+            clickableAncestor: img.closest('a, button, [onclick]')?.tagName || 'None',
+            hasOnClick: !!img.onclick,
+            hasClickListeners: !!img.getAttribute('data-has-click-listener'),
+            cssPosition: window.getComputedStyle(img.parentElement).position
+        });
+        
+        // See if there are any click handlers on parent elements
+        let parent = img.parentElement;
+        while (parent && parent !== document.body) {
+            if (parent.onclick || parent.getAttribute('data-has-click-listener')) {
+                console.log('Found click handler on ancestor:', parent.tagName, parent.className);
+            }
+            parent = parent.parentElement;
+        }
+    }
+}
+
+// Process each image on the page - with improved handling
 function processImages() {
+    // Get all images
     const images = document.querySelectorAll('img');
     
     images.forEach(img => {
-        // Skip if already processed or not a Midjourney image
-        if (
-            img.hasAttribute('data-mj-processed') || 
-            !isMidjourneyImage(img.src)
-        ) {
+        // Skip invalid images or already processed ones
+        if (!img || !img.src || img.hasAttribute('data-mj-processed') || !isMidjourneyImage(img.src)) {
             return;
         }
         
         // Mark as processed
         img.setAttribute('data-mj-processed', 'true');
         
-        // Instead of creating a new container, preserve the original layout
-        // Just ensure the parent has position relative
-        let container = img.parentElement;
+        // Ensure the image is in a valid container
+        const container = img.parentElement;
+        if (!container) return;
         
-        // Store original styles
-        const originalPosition = container.style.position;
+        // Store original position style
+        const originalPosition = getComputedStyle(container).position;
         
-        // Only set position relative if not already positioned
-        if (!originalPosition || originalPosition === 'static') {
+        // Only set position relative if needed
+        if (originalPosition === 'static' || !originalPosition) {
             container.style.position = 'relative';
         }
         
-        // Add bookmark button directly to the parent
-        container.appendChild(createBookmarkButton(img));
+        // Create and add bookmark button
+        const button = createBookmarkButton(img);
+        if (button) {
+            container.appendChild(button);
+        }
+        
+        // CRITICAL: Ensure we're not breaking the original click behavior
+        // Let's preserve any existing click handlers on the image
+        const existingClick = img.onclick;
+        
+        // Only if we need to add our own click handler, preserve existing behavior
+        if (existingClick) {
+            img.addEventListener('click', function(e) {
+                // We're explicitly NOT calling preventDefault or stopPropagation
+                // Let the original handler work
+                console.log('Image clicked, allowing original behavior');
+            });
+        }
     });
 }
 
-// Initialize: fetch saved URLs first, then process images
-updateSavedUrls(() => {
-    // Initial processing
-    processImages();
-    
-    // Watch for new images
-    const observer = new MutationObserver((mutations) => {
-        if (mutations.some(mutation => 
-            Array.from(mutation.addedNodes).some(node => 
-                node.nodeName === 'IMG' || 
-                (node.getElementsByTagName && node.getElementsByTagName('img').length)
-            )
-        )) {
-            processImages();
-        }
+// Initialize extension
+function initialize() {
+    // Load saved URLs first
+    updateSavedUrls(function() {
+        // Then process images
+        processImages();
+        
+        // Set up observer for dynamically added content
+        const observer = new MutationObserver(function(mutations) {
+            let shouldProcess = false;
+            
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                    for (let i = 0; i < mutation.addedNodes.length; i++) {
+                        const node = mutation.addedNodes[i];
+                        if (node.nodeName === 'IMG' || 
+                            (node.getElementsByTagName && node.getElementsByTagName('img').length)) {
+                            shouldProcess = true;
+                            break;
+                        }
+                    }
+                }
+            });
+            
+            if (shouldProcess) {
+                processImages();
+            }
+        });
+        
+        // Start observing document
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     });
-    
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-});
+}
 
-// Listen for updates to the saved URLs
-chrome.runtime.onMessage.addListener((message) => {
+// Call this function after the page loads
+setTimeout(analyzeImageStructure, 2000);
+
+// Listen for messages from background script
+chrome.runtime.onMessage.addListener(function(message) {
     if (message.type === 'URLS_UPDATED') {
-        updateSavedUrls(() => {
-            // Refresh all buttons
-            document.querySelectorAll('.mj-bookmark-button').forEach(button => {
+        updateSavedUrls(function() {
+            // Clean up existing buttons
+            document.querySelectorAll('.mj-bookmark-button').forEach(function(button) {
                 button.remove();
             });
-            document.querySelectorAll('[data-mj-processed]').forEach(img => {
+            
+            // Reset processed flags
+            document.querySelectorAll('[data-mj-processed]').forEach(function(img) {
                 img.removeAttribute('data-mj-processed');
             });
+            
+            // Re-process images
             processImages();
         });
     }
 });
+
+// Start the extension when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+} else {
+    initialize();
+}
