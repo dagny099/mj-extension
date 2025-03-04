@@ -86,23 +86,293 @@
         .danger-button:hover {
             background-color: #d32f2f;
         }
+        
+        .footer {
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .text-button {
+            background: none;
+            border: none;
+            color: #4285f4;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+            padding: 4px;
+        }
+        
+        .text-button:hover {
+            color: #2a75f3;
+        }
+        
+        /* Modal Styles - FIXED */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;  /* Increased width */
+            margin: 10% auto;   /* Centers it better */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 16px;    /* Improve readability */
+            line-height: 1.5;
+        }
+        
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .button-row button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+        }
+        
+        .button-row button:first-child {
+            margin-left: 0;
+        }
+        
+        .button-row button:last-child {
+            margin-right: 0;
+        }
+        
+        .primary-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        .secondary-button {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .feedback-success {
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        /* Whats New Modal Styles */
+        .whats-new-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 0;
+        }
+        
+        .whats-new-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 320px;
+            width: 85%;
+            align-self: flex-start;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+        
+        .whats-new-title {
+            margin-top: 0;
+            color: #4CAF50;
+            font-size: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .whats-new-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .whats-new-list li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .whats-new-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .whats-new-buttons button {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .whats-new-close-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        .whats-new-feedback-button {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+        }
+
+        .text-link {
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
     <div class="header">
         <h2>Midjourney Bookmarks</h2>
-        <span id="count">0 saved</span>
+        <span id="countDisplay">0 saved</span>
+        <div class="header-links">
+            <a href="#" id="howItWorksLink" class="text-link">How It Works</a>
+        </div>
     </div>
-    
+        
     <div id="urlList" class="url-list">
         <!-- URLs will be inserted here -->
     </div>
     
     <div class="button-container">
-        <button id="exportUrls">Export URLs</button>
+        <button id="exportUrls">Export URLs in Text File</button>
+        <button id="exportGallery">Open as Gallery in New Tab</button>
         <button id="clearUrls" class="danger-button">Clear All</button>
     </div>
+        
+    <div class="footer">
+        <span id="versionInfo" class="text-button">v1.0 - What's New</span>
+    </div>
     
+    <!-- Improved Feedback Modal -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <h3>Send Feedback</h3>
+            
+            <div class="feedback-form">
+                <div class="form-group">
+                    <label for="feedbackType">Type of Feedback:</label>
+                    <select id="feedbackType">
+                        <option value="bug">Report a Bug</option>
+                        <option value="feature">Feature Request</option>
+                        <option value="general">General Feedback</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="feedbackText">Your Feedback:</label>
+                    <textarea id="feedbackText" placeholder="Please describe your feedback..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactEmail">Email (optional):</label>
+                    <input type="email" id="contactEmail" placeholder="your@email.com">
+                </div>
+                
+                <div class="button-row">
+                    <button id="cancelFeedback" class="secondary-button">Cancel</button>
+                    <button id="submitFeedback" class="primary-button">Submit</button>
+                </div>
+            </div>
+            
+            <div id="feedbackSuccess" class="feedback-success" style="display: none;">
+                <p>Thank you for your feedback!</p>
+                <button id="closeFeedbackSuccess" class="primary-button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Modal -->
+    <div id="howItWorksModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeHowItWorks">&times;</span>
+            <h2>How to Use Midjourney Image Tracker</h2>
+            <!-- Instructions Content -->
+        </div>
+    </div>
+        
     <!-- Include shared.js before popup.js -->
     <script src="src/js/shared.js"></script>
     <script src="src/js/popup.js"></script>

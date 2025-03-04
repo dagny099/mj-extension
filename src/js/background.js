@@ -1,7 +1,6 @@
-// background.js
+// background.js - Revised for consistency and reliability
 
 // Include shared.js in service worker context
-// Since importScripts is only available in service workers
 try {
     importScripts('shared.js');
 } catch (e) {
@@ -31,10 +30,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 return true;
             }
 
-            // Add new URL with timestamp
+            // Add new URL 
             savedUrls.add(standardizedUrl);
             
-            // Save to storage
+            // Save to storage - store as array of strings for simplicity
             chrome.storage.local.set({ 
                 savedUrls: Array.from(savedUrls)
             }, () => {
@@ -43,21 +42,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 chrome.tabs.query({active: true}, (tabs) => {
                     tabs.forEach(tab => {
                         chrome.tabs.sendMessage(tab.id, { type: 'URLS_UPDATED' })
-                            .catch(err => console.log('Tab not ready for message:', err));
+                            .catch(err => {/* Ignore errors for inactive tabs */});
                     });
                 });
             });
             return true;
 
         case 'GET_URLS':
-            sendResponse({ 
-                urls: Array.from(savedUrls).map(url => ({
-                    url,
-                    timestamp: Date.now() // You might want to store timestamps with URLs
-                }))
-            });
+            // Send back just the array of URL strings
+            sendResponse({ urls: Array.from(savedUrls) });
             return true;
-
+        
         case 'REMOVE_URL':
             // Standardize the URL before removing
             const urlToRemove = standardizeMidjourneyUrl(message.url);
@@ -71,7 +66,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 chrome.tabs.query({active: true}, (tabs) => {
                     tabs.forEach(tab => {
                         chrome.tabs.sendMessage(tab.id, { type: 'URLS_UPDATED' })
-                            .catch(err => console.log('Tab not ready for message:', err));
+                            .catch(err => {/* Ignore errors for inactive tabs */});
                     });
                 });
             });
@@ -86,16 +81,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 chrome.tabs.query({active: true}, (tabs) => {
                     tabs.forEach(tab => {
                         chrome.tabs.sendMessage(tab.id, { type: 'URLS_UPDATED' })
-                            .catch(err => console.log('Tab not ready for message:', err));
+                            .catch(err => {/* Ignore errors for inactive tabs */});
                     });
                 });
             });
             return true;
 
         case 'EXPORT_URLS':
-            console.log('Export requested. Current URLs:', savedUrls);
             const urlList = Array.from(savedUrls).join('\n');
-            console.log('URL list created:', urlList);
             
             // Create a timestamp in YYYY-MM-DD-HHMM format
             const now = new Date();
@@ -114,7 +107,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                     console.error('Download error:', chrome.runtime.lastError);
                     sendResponse({ success: false, error: chrome.runtime.lastError });
                 } else {
-                    console.log('Download started with ID:', downloadId);
                     sendResponse({ success: true });
                 }
             });

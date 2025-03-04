@@ -11,14 +11,19 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://*.midjourney.com/*"
+    "https://*.midjourney.com/*",
+    "https://www.midjourney.com/*",
+    "*://cdn.midjourney.com/*"
   ],
   "background": {
     "service_worker": "src/js/background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://*.midjourney.com/*"],
+      "matches": [
+        "https://*.midjourney.com/*",
+        "https://www.midjourney.com/*"
+      ],
       "js": ["src/js/shared.js", "src/js/content.js"],
       "css": ["src/css/content.css"],
       "run_at": "document_end"
@@ -26,8 +31,10 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/css/*.css", "icons/*.png"],
-      "matches": ["https://*.midjourney.com/*"]
+      "resources": ["instructions.html", "gallery.html", "src/js/gallery.js", "src/css/content.css", "icons/*.png"],
+      
+
+      "matches": ["<all_urls>"]
     }
   ],
   "action": {
@@ -44,6 +51,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; font-src 'self' data:;"  
   }
 }

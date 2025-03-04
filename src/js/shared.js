@@ -9,16 +9,22 @@
  */
 function standardizeMidjourneyUrl(url) {
     if (!url) return url;
-    
-    // Extract the UUID and position part
+
+    // Convert to lowercase for consistency
+    url = url.toLowerCase();
+
+    // Remove any query parameters (e.g., ?someParam=value)
+    url = url.split('?')[0];
+
+    // Extract UUID from Midjourney URLs
     const uuidPattern = /cdn\.midjourney\.com\/([a-f0-9-]{36})/i;
     const uuidMatch = url.match(uuidPattern);
     
-    if (!uuidMatch) return url; // Not a Midjourney URL with UUID
-    
+    if (!uuidMatch) return url; // Not a valid Midjourney URL
+
     const uuid = uuidMatch[1];
-    
-    // Find the position pattern (e.g., /0_0, /1_2, grid_0, etc.)
+
+    // Extract position (e.g., /0_0, /1_2, grid_0, etc.)
     const posPattern = /\/(\d+_\d+|grid_\d+)/;
     const posMatch = url.match(posPattern);
     
@@ -26,9 +32,9 @@ function standardizeMidjourneyUrl(url) {
         const position = posMatch[1];
         return `https://cdn.midjourney.com/${uuid}/${position}.jpeg`;
     }
-    
-    // If no position match found, return original
-    return url;
+
+    // Fallback: If no position pattern is found, return a base standard URL
+    return `https://cdn.midjourney.com/${uuid}/default.jpeg`;
 }
 
 /**
