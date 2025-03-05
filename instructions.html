@@ -5,31 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>How to Use Midjourney Image Tracker</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
-        h1 { text-align: center; }
-        .highlight { font-weight: bold; color: #4CAF50; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 20px; 
+            line-height: 1.6; 
+            color: #333;
+        }
+        h1 { 
+            text-align: center; 
+            color: #2a5885;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2a5885;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .highlight { 
+            font-weight: bold; 
+            color: #4CAF50; 
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .tip {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
+        }
     </style>
 </head>
 <body>
     <h1>How to Use Midjourney Image Tracker</h1>
-    <p>This extension helps you bookmark Midjourney images and create a personal gallery.</p>
+    
+    <div class="section">
+        <p>This extension helps you bookmark and organize Midjourney-generated images. It's designed to be simple and unobtrusive, appearing only when you need it.</p>
+    </div>
 
-    <h2>Where You Can Bookmark Images</h2>
-    <ul>
-        <li>✅ <span class="highlight">Midjourney Create Page</span> (`https://www.midjourney.com/app/create`) – The bookmark icon will appear here.</li>
-        <li>✅ <span class="highlight">Midjourney Explore Page</span> (`https://www.midjourney.com/explore`) – The bookmark icon **only appears when an image is expanded.**</li>
-        <li>❌ <span class="highlight">Main Explore Grid</span> – The bookmark icon **will NOT appear here.** Click an image first.</li>
-    </ul>
+    <div class="section">
+        <h2>Where You Can Bookmark Images</h2>
+        <ul>
+            <li>✅ <span class="highlight">Midjourney Create Page</span> (<code>https://www.midjourney.com/app/create</code>) – The bookmark button will appear when you hover over any image.</li>
+            <li>✅ <span class="highlight">Midjourney Explore Page</span> (<code>https://www.midjourney.com/explore</code>) – The bookmark button <strong>only appears when an image is expanded to full view</strong>.</li>
+            <li>❌ <span class="highlight">Main Explore Grid</span> – The bookmark button <strong>will NOT appear here</strong>. You need to click an image first to expand it.</li>
+        </ul>
+        
+        <div class="tip">
+            <strong>Tip:</strong> If you don't see a bookmark button, try hovering directly over the image for 1-2 seconds. If it still doesn't appear, the image might not be from Midjourney's CDN.
+        </div>
+    </div>
 
-    <h2>How to View Your Bookmarks</h2>
-    <p>Click the extension icon and select <strong>"Open Gallery in New Tab"</strong>.</p>
+    <div class="section">
+        <h2>How to Bookmark Images</h2>
+        <ol>
+            <li>Hover over any Midjourney image to reveal the bookmark button (🔖)</li>
+            <li>Click the bookmark button to save the image (it will change to a checkmark ✓)</li>
+            <li>To remove a bookmark, click the checkmark again</li>
+        </ol>
+    </div>
 
-    <h2>How to Export Your Bookmarks</h2>
-    <ul>
-        <li>Click <strong>"Download This Page"</strong> in the gallery to save an HTML file.</li>
-        <li>Click <strong>"Export URLs in Text File"</strong> to save just the URLs.</li>
-    </ul>
+    <div class="section">
+        <h2>How to View Your Bookmarks</h2>
+        <ol>
+            <li>Click the extension icon in your browser toolbar</li>
+            <li>You'll see a list of all your bookmarked images</li>
+            <li>Click "Open as Gallery in New Tab" to see a visual gallery of your bookmarks</li>
+        </ol>
+    </div>
 
-    <p style="text-align:center;"><a href="gallery.html">Go to My Gallery</a></p>
+    <div class="section">
+        <h2>How to Export Your Bookmarks</h2>
+        <p>You have two export options:</p>
+        <ul>
+            <li><strong>Export as HTML Gallery:</strong> Click "Open as Gallery in New Tab" and then "Download This Page" to save an interactive HTML file you can view offline.</li>
+            <li><strong>Export as Text File:</strong> Click "Export URLs in Text File" to save just the URLs as a plain text file.</li>
+        </ul>
+        <p>Both export options include timestamps in the filenames for easy organization.</p>
+    </div>
+
+    <div class="section">
+        <h2>Managing Your Bookmarks</h2>
+        <ul>
+            <li>Remove individual bookmarks by clicking the "×" next to them in the popup</li>
+            <li>Clear all bookmarks by clicking the "Clear All" button (requires confirmation)</li>
+        </ul>
+        <div class="tip">
+            <strong>Note:</strong> Your bookmarks are stored locally in your browser and are not shared with anyone else.
+        </div>
+    </div>
+
+    <a href="gallery.html" class="button">Go to My Gallery</a>
+
+    <div class="footer">
+        <p>Midjourney Image Tracker - Version 1.0</p>
+    </div>
 </body>
 </html>

@@ -6,7 +6,8 @@ This document provides a comprehensive technical overview of the Midjourney Imag
 - Architecture diagrams showing how components interact  
 - Detailed component explanations with expandable technical details  
 - Data flow visualization showing how information moves through the system  
-- Performance and security considerations  
+- Performance and security considerations
+- Error handling and recovery mechanisms
 
 ## Architecture Overview
 
@@ -16,12 +17,13 @@ The extension follows Chrome's recommended architecture for extensions using Man
 
 ### Core Components
 
-The extension consists of four primary components that work together to provide a seamless experience:
+The extension consists of five primary components that work together to provide a seamless experience:
 
 1. **Content Script** - Runs in the context of the Midjourney website
 2. **Background Service Worker** - Persistent background process
 3. **Popup Interface** - User-facing management UI
-4. **Shared Utilities** - Common functions used across components
+4. **Gallery View** - Visual display of bookmarked images
+5. **Shared Utilities** - Common functions used across components
 
 ## Component Details
 
@@ -35,9 +37,15 @@ function processImages() {
   const images = document.querySelectorAll('img');
   
   images.forEach(img => {
-    if (isMidjourneyImage(img.src)) {
+    if (isMidjourneyImage(img.src) && !img.hasAttribute('data-mj-processed')) {
+      // Mark image as processed
+      img.setAttribute('data-mj-processed', 'true');
+      
+      // Create and add bookmark button
       const button = createBookmarkButton(img);
-      img.parentElement.appendChild(button);
+      if (button) {
+        img.parentElement.appendChild(button);
+      }
     }
   });
 }
@@ -48,6 +56,7 @@ function processImages() {
 - Dynamic UI injection (bookmark buttons) onto the page
 - Event handling for user interactions
 - Communication with the background service
+- Extension context validation and recovery
 
 <details>
 <summary><strong>Technical Implementation Details</strong> (Click to expand)</summary>
@@ -55,26 +64,29 @@ function processImages() {
 The content script implements a MutationObserver to detect dynamically loaded images:
 
 ```javascript
-const observer = new MutationObserver(function(mutations) {
-  let shouldProcess = false;
-  
-  mutations.forEach(function(mutation) {
-    if (mutation.type === 'childList' && mutation.addedNodes.length) {
-      for (let i = 0; i < mutation.addedNodes.length; i++) {
-        const node = mutation.addedNodes[i];
-        if (node.nodeName === 'IMG' || 
-           (node.getElementsByTagName && node.getElementsByTagName('img').length)) {
-          shouldProcess = true;
-          break;
+const observer = new MutationObserver(
+  debounce(function(mutations) {
+    let shouldProcess = false;
+    
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList' && mutation.addedNodes.length) {
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+          const node = mutation.addedNodes[i];
+          if (node.nodeName === 'IMG' || 
+             (node.getElementsByTagName && node.getElementsByTagName('img').length)) {
+            shouldProcess = true;
+            break;
+          }
         }
+        if (shouldProcess) break;
       }
     }
-  });
-  
-  if (shouldProcess) {
-    processImages();
-  }
-});
+    
+    if (shouldProcess) {
+      processImages();
+    }
+  }, DEBOUNCE_DELAY)
+);
 
 observer.observe(document.body, {
   childList: true,
@@ -83,13 +95,96 @@ observer.observe(document.body, {
 ```
 
 This ensures that images loaded dynamically after the initial page load are still detected and processed.
+
+**Button Creation and Event Handling:**
+
+```javascript
+function createBookmarkButton(img) {
+  // Skip if already has a button
+  const existingButton = img.parentElement.querySelector('[data-mj-bookmark-btn]');
+  if (existingButton) return null;
+  
+  let button = document.createElement('button');
+  const standardizedImgUrl = standardizeMidjourneyUrl(img.src);
+  
+  // Check if image is already saved (from background)
+  const isAlreadySaved = savedUrls.has(standardizedImgUrl);
+  
+  // Set initial state
+  button.className = isAlreadySaved ? 'mj-bookmark-button saved' : 'mj-bookmark-button';
+  button.textContent = isAlreadySaved ? '✓' : '🔖';
+  button.setAttribute('data-mj-bookmark-btn', 'true');
+  button.setAttribute('data-mj-url', standardizedImgUrl);
+  
+  // Handle click event
+  button.addEventListener('click', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Get current state from button's class
+    const isCurrentlySaved = button.classList.contains('saved');
+    
+    if (isCurrentlySaved) {
+      // Handle removal
+      button.textContent = '🔖';
+      button.classList.remove('saved');
+      
+      chrome.runtime.sendMessage({
+        type: 'REMOVE_URL',
+        url: standardizedImgUrl
+      }, handleResponse);
+    } else {
+      // Handle addition
+      button.textContent = '✓';
+      button.classList.add('saved');
+      
+      chrome.runtime.sendMessage({
+        type: 'SAVE_URL',
+        url: standardizedImgUrl
+      }, handleResponse);
+    }
+  });
+  
+  return button;
+}
+```
+
+**Extension Context Validation:**
+
+```javascript
+function isExtensionContextValid() {
+  try {
+    chrome.runtime.getURL('');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Check before using Chrome APIs
+function updateSavedUrls(callback, forceRefresh = false) {
+  if (!isExtensionContextValid()) {
+    console.warn('Extension context invalid, cannot update URLs');
+    return;
+  }
+  
+  // Rest of function...
+}
+
+// Periodic recovery check
+setInterval(function() {
+  if (!isExtensionContextValid()) {
+    // Attempt recovery...
+  }
+}, 10000);
+```
 </details>
 
 ---
 
 ### Background Service Worker (`background.js`)
 
-The diagram below illustrates how the background service worker processes requests and interacts with Chrome's storage APIs. 
+The background service worker processes requests and interacts with Chrome's storage APIs. 
 
 <img src="./docs/images/background-service-flow.png" alt="Background Service Flow" width="800">
 
@@ -117,7 +212,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
       }
 
-      // Add new URL with timestamp
+      // Add new URL
       savedUrls.add(standardizedUrl);
       
       // Save to storage
@@ -130,9 +225,70 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
       return true;
       
+    case 'GET_URLS':
+      // Send back just the array of URL strings
+      sendResponse({ urls: Array.from(savedUrls) });
+      return true;
+    
+    case 'REMOVE_URL':
+      // Standardize the URL before removing
+      const urlToRemove = standardizeMidjourneyUrl(message.url);
+      savedUrls.delete(urlToRemove);
+      
+      chrome.storage.local.set({ 
+        savedUrls: Array.from(savedUrls) 
+      }, () => {
+        sendResponse({ success: true });
+        // Notify content scripts about the update
+        notifyContentScripts();
+      });
+      return true;
+    
     // Other message handlers...
   }
 });
+```
+
+**Notifying Content Scripts:**
+
+```javascript
+function notifyContentScripts() {
+  chrome.tabs.query({active: true}, (tabs) => {
+    tabs.forEach(tab => {
+      chrome.tabs.sendMessage(tab.id, { type: 'URLS_UPDATED' })
+        .catch(err => {/* Ignore errors for inactive tabs */});
+    });
+  });
+}
+```
+
+**Data Export:**
+
+```javascript
+case 'EXPORT_URLS':
+  const urlList = Array.from(savedUrls).join('\n');
+  
+  // Create a timestamp in YYYY-MM-DD-HHMM format
+  const now = new Date();
+  const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  const filename = `midjourney-bookmarks-${timestamp}.txt`;
+  
+  // Use data URL instead of Blob URL
+  const dataUrl = 'data:text/plain;charset=utf-8,' + encodeURIComponent(urlList);
+  
+  chrome.downloads.download({
+    url: dataUrl,
+    filename: filename,
+    saveAs: false  // Don't show Save As dialog, save directly to Downloads
+  }, (downloadId) => {
+    if (chrome.runtime.lastError) {
+      console.error('Download error:', chrome.runtime.lastError);
+      sendResponse({ success: false, error: chrome.runtime.lastError });
+    } else {
+      sendResponse({ success: true });
+    }
+  });
+  return true;
 ```
 </details>
 
@@ -189,14 +345,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 The popup provides the user-facing interface for viewing and managing bookmarked images.
 
-**Screenshot:**
-![Popup Interface](./images/popup-interface.png)
-
 **Key Features:**
 - Displays thumbnails and URLs of all bookmarked images
+- Shows count of saved bookmarks
 - Provides options to remove individual bookmarks
-- Allows exporting all bookmarks to a text file
+- Allows exporting all bookmarks to a text file or HTML gallery
 - Supports clearing all bookmarks
+- Includes helpful documentation links
 
 <details>
 <summary><strong>Technical Implementation Details</strong> (Click to expand)</summary>
@@ -211,7 +366,12 @@ function loadUrls() {
     }
 
     const urls = response.urls;
-    countDisplay.textContent = `${urls.length} saved`;
+    
+    // Update the count display
+    const countDisplay = document.getElementById('countDisplay');
+    if (countDisplay) {
+      countDisplay.textContent = `${urls.length} saved`;
+    }
     
     if (urls.length === 0) {
       urlList.innerHTML = `
@@ -222,18 +382,142 @@ function loadUrls() {
       return;
     }
     
-    urlList.innerHTML = urls.map(({ url, timestamp }) => {
-      const standardizedUrl = standardizeMidjourneyUrl(url);
+    urlList.innerHTML = urls.map(url => {
       return `
         <div class="url-item">
-          <img src="${standardizedUrl}" alt="thumbnail" class="thumbnail">
-          <div class="url-text">${standardizedUrl}</div>
-          <button class="remove-url" data-url="${standardizedUrl}">×</button>
+          <img src="${url}" alt="thumbnail" class="thumbnail">
+          <div class="url-text">${url}</div>
+          <button class="remove-url" data-url="${url}">×</button>
         </div>
       `;
     }).join('');
+    
+    // Add event listeners to remove buttons
+    document.querySelectorAll('.remove-url').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const url = e.target.dataset.url;
+        chrome.runtime.sendMessage({
+          type: 'REMOVE_URL',
+          url: url
+        }, (response) => {
+          if (response && response.success) {
+            loadUrls(); // Refresh the list
+          }
+        });
+      });
+    });
   });
 }
+```
+
+**Export Functionality:**
+
+```javascript
+// Handle export button
+exportButton.addEventListener('click', () => {
+  chrome.runtime.sendMessage({ type: 'EXPORT_URLS' });
+});
+
+// Handle gallery export button
+exportGalleryButton.addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL("gallery.html") });
+});
+```
+
+**Version Check and What's New Dialog:**
+
+```javascript
+function checkForUpdates() {
+  const currentVersion = chrome.runtime.getManifest().version;
+  
+  chrome.storage.local.get(['lastVersion'], (result) => {
+    const lastVersion = result.lastVersion;
+    
+    if (!lastVersion) {
+      // First install
+      showWhatsNew('Welcome to Midjourney Image Tracker!', [
+        'Hover over Midjourney images to bookmark them',
+        'Use this popup to manage your bookmarks',
+        'Export your collection with one click'
+      ]);
+    } else if (lastVersion !== currentVersion) {
+      // Update from previous version
+      showWhatsNew(`What's New in v${currentVersion}`, [
+        'Improved bookmark button reliability',
+        'Better error handling and recovery',
+        'Export images as an HTML gallery'
+      ]);
+    }
+    
+    // Save current version
+    chrome.storage.local.set({ lastVersion: currentVersion });
+  });
+}
+```
+</details>
+
+---
+
+### Gallery View (`gallery.html`/`gallery.js`)
+
+The gallery provides a visual display of all bookmarked images in a grid layout.
+
+**Key Features:**
+- Visual grid display of bookmarked images
+- Direct links to original images
+- Download option for saving the gallery as HTML
+- Responsive design for various screen sizes
+- Timestamp for when the gallery was exported
+
+<details>
+<summary><strong>Technical Implementation Details</strong> (Click to expand)</summary>
+
+The gallery loads and displays all bookmarked URLs:
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  // Fetch stored URLs from Chrome storage
+  chrome.runtime.sendMessage({ type: 'GET_URLS' }, (response) => {
+    if (!response || !response.urls || response.urls.length === 0) {
+      document.getElementById('gallery').innerHTML = "<p style='text-align: center;'>No bookmarked images.</p>";
+      return;
+    }
+
+    document.getElementById('exportTimestamp').textContent = `Exported on ${new Date().toLocaleString()}`;
+
+    // Create gallery images
+    document.getElementById('gallery').innerHTML = response.urls.map(url => `
+      <div class="item">
+        <a href="${url}" target="_blank">
+          <img src="${url}" alt="Midjourney Image">
+        </a>
+        <div class="item-footer">
+          <a href="${url}" target="_blank">${url}</a>
+        </div>
+      </div>
+    `).join('');
+  });
+
+  // Implement "Download This Page" with timestamp
+  document.getElementById('downloadGallery').addEventListener('click', () => {
+    // Create a timestamp in YYYY-MM-DD-HHMM format
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    // Create filename with timestamp
+    const filename = `midjourney-gallery-${timestamp}.html`;
+    
+    const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+});
 ```
 </details>
 
@@ -249,6 +533,7 @@ The shared utilities module provides common functionality used by multiple compo
 **Key Functions:**
 - URL standardization
 - Image detection and validation
+- Extension context validation
 - Common utility helpers
 
 <details>
@@ -259,16 +544,22 @@ The URL standardization function is a core part of the extension:
 ```javascript
 function standardizeMidjourneyUrl(url) {
   if (!url) return url;
-  
-  // Extract the UUID and position part
+
+  // Convert to lowercase for consistency
+  url = url.toLowerCase();
+
+  // Remove any query parameters (e.g., ?someParam=value)
+  url = url.split('?')[0];
+
+  // Extract UUID from Midjourney URLs
   const uuidPattern = /cdn\.midjourney\.com\/([a-f0-9-]{36})/i;
   const uuidMatch = url.match(uuidPattern);
   
-  if (!uuidMatch) return url; // Not a Midjourney URL with UUID
-  
+  if (!uuidMatch) return url; // Not a valid Midjourney URL
+
   const uuid = uuidMatch[1];
-  
-  // Find the position pattern (e.g., /0_0, /1_2, grid_0, etc.)
+
+  // Extract position (e.g., /0_0, /1_2, grid_0, etc.)
   const posPattern = /\/(\d+_\d+|grid_\d+)/;
   const posMatch = url.match(posPattern);
   
@@ -276,13 +567,34 @@ function standardizeMidjourneyUrl(url) {
     const position = posMatch[1];
     return `https://cdn.midjourney.com/${uuid}/${position}.jpeg`;
   }
-  
-  // If no position match found, return original
-  return url;
+
+  // Fallback: If no position pattern is found, return a base standard URL
+  return `https://cdn.midjourney.com/${uuid}/default.jpeg`;
 }
 ```
 
-This ensures that different representations of the same image (thumbnails, full-size views, etc.) are recognized as the same image.
+**Image Detection:**
+
+```javascript
+function isMidjourneyImage(url) {
+  if (!url) return false;
+  return url.includes('cdn.midjourney.com') && url.match(/[a-f0-9-]{36}/i);
+}
+```
+
+**Extension Context Validation (shared implementation):**
+
+```javascript
+function isExtensionContextValid() {
+  try {
+    // This will throw if context is invalid
+    chrome.runtime.getURL('');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+```
 </details>
 
 ## Data Flow & Communication
@@ -319,28 +631,134 @@ This approach ensures that bookmarks persist even when the browser is closed and
 
 The extension is designed with performance in mind:
 
-1. **Selective Processing**: Only processes actual Midjourney images, not all images on the page
-2. **Efficient DOM Manipulation**: Minimizes layout thrashing when adding UI elements
-3. **Deferred Processing**: Uses MutationObserver to process images as they load
-4. **URL Set Management**: Uses JavaScript's Set data structure for efficient URL storage and lookups
+1. **Selective Processing**: 
+   - Only processes actual Midjourney images, not all images on the page
+   - Skips already processed images
+
+2. **Efficient DOM Manipulation**: 
+   - Minimizes layout thrashing when adding UI elements
+   - Uses appropriate CSS for smooth animations and transitions
+
+3. **Deferred Processing**: 
+   - Uses MutationObserver with debounce to process images as they load
+   - Prevents duplicate bookmark buttons on the same image
+
+4. **URL Set Management**: 
+   - Uses JavaScript's Set data structure for efficient URL storage and lookups
+   - Ensures standardized URLs to prevent duplicates
+
+5. **Button Event Optimization**:
+   - Uses the button's own state rather than closure variables
+   - Properly prevents event propagation
+
+## Error Handling and Recovery
+
+The extension implements several error handling and recovery mechanisms:
+
+1. **Extension Context Validation**:
+   - Checks if extension context is valid before using Chrome APIs
+   - Prevents uncaught errors when extension is reloaded
+
+2. **Automatic Recovery**:
+   - Periodically checks for extension context validity
+   - Reinitializes if context becomes invalid
+
+3. **Chrome API Error Handling**:
+   - Wraps Chrome API calls in try/catch blocks
+   - Provides appropriate fallbacks when errors occur
+
+4. **State Consistency**:
+   - Uses button classes to track current state
+   - Forces refreshes of saved URLs cache after operations
+
+5. **Notification System**:
+   - Notifies content scripts when bookmark list changes
+   - Ensures all tabs stay in sync with the current saved state
+
+```javascript
+// Example of error handling and recovery
+function attemptRecovery() {
+  if (!isExtensionContextValid()) {
+    console.log('Extension context invalid, attempting recovery...');
+    
+    // Remove all existing buttons
+    document.querySelectorAll('[data-mj-bookmark-btn]').forEach(btn => {
+      try {
+        btn.remove();
+      } catch (e) {
+        console.error('Error removing button:', e);
+      }
+    });
+    
+    // Reset processing flags
+    document.querySelectorAll('[data-mj-processed]').forEach(img => {
+      try {
+        img.removeAttribute('data-mj-processed');
+      } catch (e) {
+        console.error('Error resetting image:', e);
+      }
+    });
+    
+    // Reset initialization state
+    initialized = false;
+    
+    // Attempt to reinitialize
+    setTimeout(initialize, 500);
+  }
+}
+
+// Periodic check
+setInterval(attemptRecovery, 10000);
+```
 
 ## Security Measures
 
 Security considerations implemented in the extension:
 
-1. **Content Security Policy**: Restricts script execution to extension resources
-2. **URL Sanitization**: Validates URLs before processing
-3. **Permission Scoping**: Requests only the minimum permissions required
-4. **Safe DOM Manipulation**: Prevents XSS by using safe DOM APIs
+1. **Content Security Policy**: 
+   - Restricts script execution to extension resources
+   - Prevents execution of arbitrary code
+
+2. **URL Sanitization**: 
+   - Validates and standardizes URLs before processing
+   - Prevents injection attacks through URLs
+
+3. **Permission Scoping**: 
+   - Requests only the minimum permissions required
+   - Uses specifically targeted host permissions
+
+4. **Safe DOM Manipulation**: 
+   - Prevents XSS by using safe DOM APIs
+   - Properly escapes user-generated content
+
+5. **Data Storage Safety**:
+   - Uses chrome.storage.local for secure, isolated storage
+   - Prevents other extensions from accessing the stored data
 
 ## Future Technical Enhancements
 
 The architecture is designed to support future enhancements:
 
-1. **Metadata Extraction**: Framework for extracting and storing image metadata
-2. **Sync Support**: Structure prepared for adding Chrome sync capabilities
-3. **Advanced Filtering**: Data structure supports adding tagging and filtering
-4. **Performance Optimizations**: Further optimizations for handling larger numbers of bookmarks
+1. **Metadata Extraction**: 
+   - Framework for extracting and storing image metadata
+   - Ability to filter and sort images by metadata
+
+2. **Sync Support**: 
+   - Structure prepared for adding Chrome sync capabilities
+   - Enable cross-device synchronization of bookmarks
+
+3. **Advanced Filtering**: 
+   - Data structure supports adding tagging and filtering
+   - Search functionality for finding specific bookmarks
+
+4. **Performance Optimizations**: 
+   - Further optimizations for handling larger numbers of bookmarks
+   - Improved caching strategies
+
+5. **User Interface Enhancements**:
+   - Dark mode support
+   - Customizable gallery layouts
+   - Additional export formats
 
 ## Development Tools & Environment
 
@@ -348,7 +766,7 @@ The extension is developed using:
 
 - JavaScript (ES6+)
 - Chrome Extension APIs (Manifest V3)
-- HTML/CSS for the popup interface
+- HTML/CSS for the popup and gallery interfaces
 - VS Code for development
 
 ## Testing Strategy
@@ -359,6 +777,7 @@ The extension is tested using:
 - Cross-version compatibility testing
 - Performance testing with large numbers of bookmarks
 - Error handling verification
+- Extension context recovery testing
 
 ## Appendix: Technical Diagrams
 
@@ -372,18 +791,17 @@ midjourney-extension/
 │   │   ├── shared.js    # Shared utility functions
 │   │   ├── background.js # Background service worker
 │   │   ├── content.js   # Content script for page interaction
-│   │   └── popup.js     # Popup functionality
+│   │   ├── popup.js     # Popup functionality
+│   │   └── gallery.js   # Gallery functionality
 │   └── css/
 │       └── content.css  # Styles for bookmark button
 ├── popup.html           # Extension popup interface
+├── gallery.html         # Gallery view for bookmarks
+├── instructions.html    # User guide
 ├── icons/               # Extension icons
 └── docs/                # Documentation
     └── images/          # Documentation images
 ```
-
-### Error Handling Flow
-
-A diagram illustrating the error handling flow throughout the extension components would be valuable to add here.
 
 ---
 
