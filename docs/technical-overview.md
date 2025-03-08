@@ -13,7 +13,10 @@ This document provides a comprehensive technical overview of the Midjourney Imag
 
 The extension follows Chrome's recommended architecture for extensions using Manifest V3, with a clear separation of concerns between different components.
 
-<img src="./docs/images/mj-extension-architecture-flow-diagram.png" alt="Extension Architecture Flow" width="800">
+<div style="float: right; margin: 0 0 10px 10px;">
+<a href="./images/mj-extension-architecture-flow-diagram.png" target="_blank"> 
+<img src="./images/mj-extension-architecture-flow-diagram.png" alt="Extension Architecture Flow" width="650"></a>
+</div>
 
 ### Core Components
 
@@ -186,7 +189,10 @@ setInterval(function() {
 
 The background service worker processes requests and interacts with Chrome's storage APIs. 
 
-<img src="./docs/images/background-service-flow.png" alt="Background Service Flow" width="800">
+<div style="float: right; margin: 0 0 10px 10px;">
+<a href="./images/mj-extension-background-service-worker-flow-diagram.png" target="_blank"> 
+<img src="./images/mj-extension-background-service-worker-flow-diagram.png" alt="Background Service Flow" width="650"></a>
+</div>
 
 **Key Responsibilities:**
 - Maintains the collection of saved URLs
@@ -528,7 +534,6 @@ document.addEventListener('DOMContentLoaded', () => {
 The shared utilities module provides common functionality used by multiple components, ensuring consistent behavior.
 
 **URL Standardization Process:**
-![URL Standardization Process](./images/url-standardization-process.png)
 
 **Key Functions:**
 - URL standardization
@@ -605,7 +610,10 @@ The extension components communicate through Chrome's message passing API, creat
 
 This sequence diagram illustrates how data flows through the system when a user interacts with the extension:
 
-<img src="./docs/images/mj-extension-user-interaction-flow.png" alt="User Interaction Flow" width="800">
+<div style="float: right; margin: 0 0 10px 10px;">
+<a href="./images/mj-extension-sequence-flow-diagram.png" target="_blank"> 
+<img src="./images/mj-extension-sequence-flow-diagram.png" alt="User Interaction Flow" width="800"></a>
+</div>
 
 ### Storage Strategy
 
@@ -801,6 +809,9 @@ midjourney-extension/
 ├── icons/               # Extension icons
 └── docs/                # Documentation
     └── images/          # Documentation images
+└── LICENSE.md           # MIT License
+└── PRIVACY.md           # Privacy Policy
+└── README.md            # README!
 ```
 
 ---

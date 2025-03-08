@@ -121,7 +121,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-    
+
+    // Handle privacy policy link
+    const privacyPolicyLink = document.getElementById('privacyPolicyLink');
+    if (privacyPolicyLink) {
+        privacyPolicyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Replace with your actual privacy policy URL once created
+            const privacyPolicyUrl = 'https://github.com/dagny099/mj-extension/blob/main/PRIVACY.md';
+            chrome.tabs.create({ url: privacyPolicyUrl });
+        });
+    }    
     // Initial load
     loadUrls();
     

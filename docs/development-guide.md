@@ -67,6 +67,9 @@ midjourney-extension/
 ├── icons/               # Extension icons
 ├── docs/                # Documentation
 └── tests/               # Test files (if implemented)
+└── LICENSE.md           # MIT License
+└── PRIVACY.md           # Privacy Policy
+└── README.md            # README!
 ```
 
 ## Development Workflow
@@ -556,7 +559,6 @@ To publish to the Chrome Web Store:
 4. Fill in store listing information
 5. Submit for review
 
-![Chrome Web Store Submission](./images/webstore-submission.png)
 
 ### Creating Good Store Listing Materials
 

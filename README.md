@@ -2,9 +2,12 @@
 
 A Chrome extension for tracking and saving Midjourney-generated images with consistent URL formatting and metadata support.
 
-<img src="./docs/images/mj-extension-architecture-flow-diagram.png" alt="Extension Architecture Flow" width="800">
+<img src="./docs/images/mj-extension-user-journey-diagram.png" alt="Extension Architecture Flow" width="600">
 
 ## Features
+<div style="float: right; margin: 0 0 10px 10px;">
+<img src="./docs/images/screenshot_popup_1_bookmarked.png" alt="Extension Pop-up Window" width="250">
+</div>
 
 - **Bookmark Midjourney Images**: Easily save your favorite Midjourney-generated images
 - **Smart URL Standardization**: Automatically detects and standardizes image URLs to prevent duplicates
@@ -26,21 +29,19 @@ A Chrome extension for tracking and saving Midjourney-generated images with cons
 4. Click "Load unpacked" and select the extension directory
 
 ## How It Works
+<div style="float: right; margin: 0 0 10px 10px;">
+<img src="./docs/images/mj-extension-simple-user-flow-v1.png" alt="User Interaction Flow" width="400">
+</div>
 
-<img src="./docs/images/mj-extension-user-interaction-flow.png" alt="User Interaction Flow" width="800">
+1. **Browse Midjourney**: Visit the Midjourney website (create or explore pages)  
+2. **Hover & Bookmark**: Hover over any Midjourney image to see the bookmark button  
+3. **Manage Collection**: Click the extension icon to view and manage your bookmarks  
+4. **Export Options**: Export your collection as an HTML gallery or a text file   
 
-1. **Browse Midjourney**: Visit the Midjourney website (create or explore pages)
-2. **Hover & Bookmark**: Hover over any Midjourney image to see the bookmark button
-3. **Manage Collection**: Click the extension icon to view and manage your bookmarks
-4. **Export Options**: Export your collection as an HTML gallery or a text file
-
-## Where You Can Bookmark Images
-
-✅ **Midjourney Create Page** (`https://www.midjourney.com/app/create`) – Bookmark icons will appear on hover.
-
-✅ **Midjourney Explore Page** (`https://www.midjourney.com/explore`) – Bookmark icons appear when an image is expanded.
-
-❌ **Main Explore Grid** – Bookmark icons will NOT appear here. Click an image first to expand it.
+**Where You Can Bookmark Images:**   
+- ✅ **Midjourney Create Page** (`https://www.midjourney.com/app/create`) – Bookmark icons will appear on hover.  
+- ✅ **Midjourney Explore Page** (`https://www.midjourney.com/explore`) – Bookmark icons appear when an image is expanded.  
+- ❌ **Main Explore Grid** – Bookmark icons will NOT appear here. Click an image first to expand it.  
 
 ## Project Structure
 
@@ -60,10 +61,34 @@ midjourney-extension/
 ├── gallery.html         # Bookmarked images gallery view
 ├── instructions.html    # How-to-use guide
 ├── icons/               # Extension icons
+└── LICENSE.md           # MIT License
+└── PRIVACY.md           # Privacy Policy
 └── README.md            # Documentation
 ```
 
-## Key Features Explained
+## Architecture & Data Flow Overview
+
+The diagram below illustrates the simple but powerful architecture of the Midjourney Image Tracker extension:
+
+<div style="float: right; margin: 0 0 10px 10px;">
+<img src="./docs/images/mj-extension-simple-architecture-diagram-v1.png" alt="User Interaction Flow" width="500">
+</div>
+
+### Overview of Components
+- **Content Script:** Detects Midjourney images as you browse and adds bookmark buttons that appear on hover.  
+- **Background Service:** Stores and standardizes your bookmarked image URLs to ensure consistent tracking.  
+- **User Interface:** Manages your collection through a popup menu and gallery view, accessible via the extension icon.  
+- **Browser Storage:** Securely saves your bookmarks locally on your device with no cloud storage required.  
+
+
+### Data Flow
+1. When you visit Midjourney, the Content Script automatically detects images and adds bookmark buttons.
+2. Clicking a bookmark button sends the image URL to the Background Service.
+3. The Background Service standardizes the URL and stores it in Browser Storage.
+4. The User Interface reads from and sends commands to the Background Service.
+5. Your bookmarks are stored locally and never leave your device. Read the [Privacy Policy](PRIVACY.md) governing user data practices. 
+
+## Key Features
 
 ### URL Standardization
 
@@ -74,9 +99,10 @@ The extension standardizes different formats of the same Midjourney image URL to
 
 Both are standardized to: `https://cdn.midjourney.com/cc4c6c46-bd2a-41da-92c0-a36c2bd2766f/0_0.jpeg`
 
-### Gallery Export
+### HTML Gallery and TXT File Export
 
 The HTML gallery export feature creates a standalone HTML file with your bookmarked images that you can save locally and view in any browser - even offline.
+
 
 ## Feedback & Contributing
 
