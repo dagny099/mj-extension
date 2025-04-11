@@ -1,13 +1,13 @@
 # Midjourney Image Tracker - Chrome Extension
 
-<img src="./docs/images/mj-extension-user-journey-diagram.png" alt="Extension Architecture Flow" align="right" width="550" style="padding-left: 10px;">
-
 <p style="padding: 15px 20px 0px 5px;"> A lightweight browser extension that lets users bookmark and revisit their favorite Midjourney images in an HTML gallery, enabling consistent URL formatting and metadata support. <p> 
+<img src="./docs/images/mj-extension-user-journey-diagram.png" alt="Extension Architecture Flow" align="center" width="550">
+
 
 <div style="clear:both;"></div>
 
 ## Features
-<img src="./docs/images/screenshot_popup_1_bookmarked.png" alt="Extension Pop-up Window" align="right" width="250" >
+<img src="./docs/images/screenshot_popup_1_bookmarked.png" alt="Extension Pop-up Window" align="right" width="275" style="padding: 10px 0px 15px 0px;">
 
 - **Bookmark Midjourney Images**: Easily save your favorite Midjourney-generated images
 - **Smart URL Standardization**: Automatically detects and standardizes image URLs to prevent duplicates
@@ -15,6 +15,8 @@
 - **Export Options**: Download your bookmarked images as an HTML gallery or as a text file of URLs
 - **Hover Interaction**: Bookmark buttons appear when hovering over Midjourney images
 - **Cross-Page Support**: Works across various Midjourney site pages
+
+<div style="clear:both;"></div>
 
 ## Installation
 
@@ -51,7 +53,7 @@ midjourney-extension/
 ```
 
 ## How It Works
-<img src="./docs/images/mj-extension-simple-user-flow-v1.png" alt="User Interaction Flow" width="400" align="right" style="padding-right: 20px;">
+<img src="./docs/images/mj-extension-simple-user-flow-v1.png" alt="User Interaction Flow" width="400" align="right" style="padding: 20px 20px 0px 0px;">
 
 #### 1. Browse Midjourney
 Visit the Midjourney website (create or explore pages)  
