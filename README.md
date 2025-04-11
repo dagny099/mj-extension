@@ -84,13 +84,7 @@ Both are standardized to: `https://cdn.midjourney.com/cc4c6c46-bd2a-41da-92c0-a3
 
 The HTML gallery export feature creates a standalone HTML file with your bookmarked images that you can save locally and view in any browser - even offline.
 
-## Feedback & Contributing
-
-Feedback and contributions are welcome! You can:
-
-1. Submit issues via GitHub
-2. Send feedback through the feedback form in the extension
-3. Fork the repository and submit pull requests
+<br>
 
 ## Dive Deeper
 
