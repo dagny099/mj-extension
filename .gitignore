@@ -1,2 +1,6 @@
 *.DS_Store
 *store/
+
+# Dont sync my draft documnents
+docs/*_barb_*
+*_barb*
