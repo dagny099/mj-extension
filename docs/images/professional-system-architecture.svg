@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for professional look -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="amberGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Arrow markers -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
+    </marker>
+    
+    <!-- Drop shadow filter -->
+    <filter id="dropshadow" x="0" y="0" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="2" dy="2" result="offset" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#F8FAFC"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1F2937">
+    Midjourney Image Tracker - System Architecture
+  </text>
+  
+  <!-- Chrome Browser Context -->
+  <rect x="50" y="60" width="1100" height="720" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+  <text x="70" y="85" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#6B7280">Chrome Browser Runtime Environment</text>
+
+  <!-- User Layer -->
+  <rect x="80" y="100" width="1040" height="80" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" rx="8" filter="url(#dropshadow)"/>
+  <text x="600" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#92400E">User Interaction Layer</text>
+  
+  <!-- User Actions -->
+  <rect x="120" y="140" width="120" height="30" fill="url(#amberGradient)" rx="5"/>
+  <text x="180" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Browse MJ Site</text>
+  
+  <rect x="260" y="140" width="120" height="30" fill="url(#amberGradient)" rx="5"/>
+  <text x="320" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Hover Image</text>
+  
+  <rect x="400" y="140" width="120" height="30" fill="url(#amberGradient)" rx="5"/>
+  <text x="460" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Click Bookmark</text>
+  
+  <rect x="540" y="140" width="120" height="30" fill="url(#amberGradient)" rx="5"/>
+  <text x="600" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Open Popup</text>
+  
+  <rect x="680" y="140" width="120" height="30" fill="url(#amberGradient)" rx="5"/>
+  <text x="740" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Export Data</text>
+
+  <!-- Extension Context Layer -->
+  <rect x="80" y="200" width="1040" height="420" fill="#EEF2FF" stroke="#6366F1" stroke-width="2" rx="8" filter="url(#dropshadow)"/>
+  <text x="100" y="225" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#4338CA">Chrome Extension Context</text>
+
+  <!-- Content Script -->
+  <rect x="120" y="240" width="280" height="160" fill="url(#greenGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="260" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Content Script</text>
+  <text x="130" y="285" font-family="Arial, sans-serif" font-size="11" fill="white">• DOM Injection & Manipulation</text>
+  <text x="130" y="300" font-family="Arial, sans-serif" font-size="11" fill="white">• Event Handling (hover, click)</text>
+  <text x="130" y="315" font-family="Arial, sans-serif" font-size="11" fill="white">• Bookmark Button Creation</text>
+  <text x="130" y="330" font-family="Arial, sans-serif" font-size="11" fill="white">• Local Cache Management (5s TTL)</text>
+  <text x="130" y="345" font-family="Arial, sans-serif" font-size="11" fill="white">• Debounced Interactions (200ms)</text>
+  <text x="130" y="360" font-family="Arial, sans-serif" font-size="11" fill="white">• Extension Context Validation</text>
+  <text x="130" y="375" font-family="Arial, sans-serif" font-size="11" fill="white">• Error Recovery & Graceful Degradation</text>
+  <text x="130" y="390" font-family="Arial, sans-serif" font-size="11" fill="white">runs on: *.midjourney.com</text>
+
+  <!-- Background Service Worker -->
+  <rect x="460" y="240" width="280" height="160" fill="url(#blueGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="600" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Background Service Worker</text>
+  <text x="470" y="285" font-family="Arial, sans-serif" font-size="11" fill="white">• Central Message Hub</text>
+  <text x="470" y="300" font-family="Arial, sans-serif" font-size="11" fill="white">• URL Standardization Pipeline</text>
+  <text x="470" y="315" font-family="Arial, sans-serif" font-size="11" fill="white">• Duplicate Detection (Set-based O(1))</text>
+  <text x="470" y="330" font-family="Arial, sans-serif" font-size="11" fill="white">• Persistent Storage Management</text>
+  <text x="470" y="345" font-family="Arial, sans-serif" font-size="11" fill="white">• Cross-Tab Synchronization</text>
+  <text x="470" y="360" font-family="Arial, sans-serif" font-size="11" fill="white">• API Message Validation</text>
+  <text x="470" y="375" font-family="Arial, sans-serif" font-size="11" fill="white">• Error Handling & Logging</text>
+  <text x="470" y="390" font-family="Arial, sans-serif" font-size="11" fill="white">Manifest V3 Service Worker</text>
+
+  <!-- Popup Interface -->
+  <rect x="800" y="240" width="280" height="160" fill="url(#purpleGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="940" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">Popup Interface</text>
+  <text x="810" y="285" font-family="Arial, sans-serif" font-size="11" fill="white">• Bookmark Management UI</text>
+  <text x="810" y="300" font-family="Arial, sans-serif" font-size="11" fill="white">• Thumbnail Grid Display</text>
+  <text x="810" y="315" font-family="Arial, sans-serif" font-size="11" fill="white">• Export Pipeline (HTML/TXT)</text>
+  <text x="810" y="330" font-family="Arial, sans-serif" font-size="11" fill="white">• Individual URL Management</text>
+  <text x="810" y="345" font-family="Arial, sans-serif" font-size="11" fill="white">• Version Info & Help System</text>
+  <text x="810" y="360" font-family="Arial, sans-serif" font-size="11" fill="white">• Responsive Design (400px)</text>
+  <text x="810" y="375" font-family="Arial, sans-serif" font-size="11" fill="white">• Real-time Data Sync</text>
+  <text x="810" y="390" font-family="Arial, sans-serif" font-size="11" fill="white">popup.html + popup.js</text>
+
+  <!-- Shared Utilities Layer -->
+  <rect x="120" y="420" width="960" height="80" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="2" rx="8" filter="url(#dropshadow)"/>
+  <text x="600" y="445" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#374151">Shared Utilities Layer</text>
+  
+  <rect x="160" y="460" width="180" height="30" fill="#6B7280" rx="5"/>
+  <text x="250" y="478" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">URL Standardization</text>
+  
+  <rect x="360" y="460" width="160" height="30" fill="#6B7280" rx="5"/>
+  <text x="440" y="478" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Image Detection</text>
+  
+  <rect x="540" y="460" width="200" height="30" fill="#6B7280" rx="5"/>
+  <text x="640" y="478" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Context Validation</text>
+  
+  <rect x="760" y="460" width="160" height="30" fill="#6B7280" rx="5"/>
+  <text x="840" y="478" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Error Recovery</text>
+
+  <!-- Storage & API Layer -->
+  <rect x="80" y="640" width="1040" height="120" fill="#FEE2E2" stroke="#EF4444" stroke-width="2" rx="8" filter="url(#dropshadow)"/>
+  <text x="100" y="665" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#B91C1C">Browser APIs & Storage</text>
+
+  <rect x="120" y="680" width="200" height="60" fill="url(#redGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="220" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Chrome Storage</text>
+  <text x="130" y="715" font-family="Arial, sans-serif" font-size="10" fill="white">• Local Persistence (~5MB)</text>
+  <text x="130" y="727" font-family="Arial, sans-serif" font-size="10" fill="white">• JSON Serialization</text>
+
+  <rect x="340" y="680" width="200" height="60" fill="url(#redGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="440" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Downloads API</text>
+  <text x="350" y="715" font-family="Arial, sans-serif" font-size="10" fill="white">• File Export Generation</text>
+  <text x="350" y="727" font-family="Arial, sans-serif" font-size="10" fill="white">• HTML/TXT Formats</text>
+
+  <rect x="560" y="680" width="200" height="60" fill="url(#redGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="660" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Runtime API</text>
+  <text x="570" y="715" font-family="Arial, sans-serif" font-size="10" fill="white">• Message Passing</text>
+  <text x="570" y="727" font-family="Arial, sans-serif" font-size="10" fill="white">• Context Communication</text>
+
+  <rect x="780" y="680" width="200" height="60" fill="url(#redGradient)" rx="8" filter="url(#dropshadow)"/>
+  <text x="880" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Tabs API</text>
+  <text x="790" y="715" font-family="Arial, sans-serif" font-size="10" fill="white">• Cross-Tab Updates</text>
+  <text x="790" y="727" font-family="Arial, sans-serif" font-size="10" fill="white">• Active Tab Detection</text>
+
+  <!-- Data Flow Arrows -->
+  <!-- User to Content Script -->
+  <line x1="320" y1="170" x2="260" y2="240" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Content Script to Background -->
+  <line x1="400" y1="320" x2="460" y2="320" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Background to Popup -->
+  <line x1="740" y1="320" x2="800" y2="320" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Background to Storage -->
+  <line x1="600" y1="400" x2="600" y2="640" stroke="#6B7280" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Shared utilities connections -->
+  <line x1="250" y1="420" x2="250" y2="400" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="440" y1="420" x2="440" y2="400" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="640" y1="420" x2="600" y2="400" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="840" y1="420" x2="840" y2="400" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Message Flow Labels -->
+  <text x="430" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">SAVE_URL</text>
+  <text x="770" y="310" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">GET_URLS</text>
+  <text x="620" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#6B7280">Persist</text>
+
+  <!-- Performance Indicators -->
+  <circle cx="380" cy="280" r="8" fill="#10B981" opacity="0.8"/>
+  <text x="390" y="285" font-family="Arial, sans-serif" font-size="8" fill="#065F46">⚡ 200ms debounce</text>
+  
+  <circle cx="720" cy="280" r="8" fill="#10B981" opacity="0.8"/>
+  <text x="730" y="285" font-family="Arial, sans-serif" font-size="8" fill="#065F46">⚡ O(1) lookup</text>
+
+  <!-- Security Indicators -->
+  <rect x="85" y="205" width="15" height="15" fill="#EF4444" opacity="0.8" rx="2"/>
+  <text x="105" y="215" font-family="Arial, sans-serif" font-size="8" fill="#B91C1C">🔒 CSP Enforced</text>
+  
+  <rect x="580" y="205" width="15" height="15" fill="#EF4444" opacity="0.8" rx="2"/>
+  <text x="600" y="215" font-family="Arial, sans-serif" font-size="8" fill="#B91C1C">🔒 Input Sanitization</text>
+</svg>

@@ -32,24 +32,29 @@
 ## Project Structure
 
 ```
-midjourney-extension/
+mj-extension/
 ├── manifest.json        # Extension configuration
 ├── src/
 │   ├── js/
-│   │   ├── shared.js    # Shared utility functions
+│   │   ├── shared.js    # Shared utility functions (URL standardization)
 │   │   ├── background.js # Background service worker
 │   │   ├── content.js   # Content script for page interaction
 │   │   ├── popup.js     # Popup functionality
 │   │   └── gallery.js   # Gallery page functionality
 │   └── css/
 │       └── content.css  # Styles for bookmark button
+├── docs/                # Documentation and guides
+│   ├── images/          # Screenshots and diagrams
+│   ├── technical-overview.md
+│   ├── development-guide.md
+│   └── url-standardization.md
 ├── popup.html           # Extension popup interface
 ├── gallery.html         # Bookmarked images gallery view
 ├── instructions.html    # How-to-use guide
-├── icons/               # Extension icons
-└── LICENSE.md           # MIT License
-└── PRIVACY.md           # Privacy Policy
-└── README.md            # Documentation
+├── icons/               # Extension icons (16x16, 48x48, 128x128)
+├── LICENSE.md           # MIT License
+├── PRIVACY.md           # Privacy Policy
+└── README.md            # Main documentation
 ```
 
 ## How It Works
@@ -90,9 +95,10 @@ The HTML gallery export feature creates a standalone HTML file with your bookmar
 
 For more detailed information, see:
 
-- **[Technical Overview]()** - *[Coming May 2025]* Architecture details and component interactions
-- **[Development Guide]()** - *[Coming May 2025]* Setup and contribution guidelines
-- **[URL Standardization]()** - *[Coming May 2025]* Deep dive into the URL standardization feature
+- **[Technical Overview](./docs/technical-overview.md)** - Architecture details and component interactions
+- **[Development Guide](./docs/development-guide.md)** - Setup and contribution guidelines  
+- **[URL Standardization](./docs/url-standardization.md)** - Deep dive into the URL standardization feature
+- **[API Reference](./docs/api-reference.md)** - Complete message passing API documentation
 
 ## License
 
