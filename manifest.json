@@ -1,16 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Midjourney Image Tracker",
-  "version": "1.0",
-  "description": "Bookmark your Midjourney AI-generated artwork URLs and Save their metadata",
+  "version": "1.0.0",
+  "description": "Bookmark and organize your favorite Midjourney AI artworks with smart URL standardization and offline gallery export",
+  "short_name": "MJ Tracker",
   "homepage_url": "https://github.com/dagny099/mj-extension",
   "privacy_policy_url": "https://github.com/dagny099/mj-extension/blob/main/PRIVACY.md",
   "permissions": [
     "activeTab",
     "storage",
-    "downloads",
-    "downloads.shelf",
-    "tabs"
+    "downloads"
   ],
   "host_permissions": [
     "https://*.midjourney.com/*",
