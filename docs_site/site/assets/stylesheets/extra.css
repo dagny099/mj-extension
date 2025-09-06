@@ -1,0 +1,217 @@
+/* Custom styles for Midjourney Image Tracker documentation */
+
+/* Hero section styling */
+.md-typeset .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.md-typeset .grid.cards > .card {
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.1rem;
+  display: block;
+  margin: 0;
+  padding: 0.8rem;
+  transition: border 250ms, box-shadow 250ms;
+}
+
+.md-typeset .grid.cards > .card:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: var(--md-shadow-z2);
+}
+
+/* Custom button styling */
+.md-button {
+  margin: 0.2rem 0.2rem 0.2rem 0;
+}
+
+.md-button--primary {
+  background-color: var(--md-primary-fg-color);
+  border-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+/* Grid layout for cards */
+.grid-item {
+  padding: 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  margin-bottom: 1rem;
+}
+
+/* Code highlighting improvements */
+.highlight .c1 {
+  font-style: italic;
+}
+
+/* Image styling */
+.md-typeset img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Admonition customizations */
+.md-typeset .admonition.info {
+  border-color: var(--md-accent-fg-color);
+}
+
+/* Tab styling */
+.md-typeset .tabbed-set {
+  border-radius: 0.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  position: relative;
+}
+
+/* Navigation improvements */
+.md-nav__item--nested > .md-nav__link {
+  color: var(--md-default-fg-color--light);
+}
+
+/* Footer customizations */
+.md-footer {
+  color: var(--md-footer-fg-color);
+}
+
+/* Social icons */
+.md-social {
+  margin: 0 0.2rem;
+  padding: 0.2rem;
+}
+
+/* Logo adjustments */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  filter: brightness(0) saturate(100%) invert(100%);
+}
+
+[data-md-color-scheme="default"] .md-header__button.md-logo img,
+[data-md-color-scheme="default"] .md-header__button.md-logo svg {
+  filter: none;
+}
+
+/* Code block improvements */
+.md-typeset .highlight {
+  margin: 1em 0;
+}
+
+.md-typeset .highlight .filename {
+  background-color: var(--md-code-bg-color);
+  border-bottom: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.1rem 0.1rem 0 0;
+  color: var(--md-code-fg-color);
+  display: block;
+  font-size: 0.85em;
+  font-weight: 700;
+  margin: 0 0 -0.5rem;
+  padding: 0.5rem 1.1rem;
+}
+
+/* Feature grid styling */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 1.5rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.feature-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--md-accent-fg-color);
+  margin-bottom: 1rem;
+}
+
+/* Architecture diagram styling */
+.architecture-diagram {
+  background: var(--md-code-bg-color);
+  border-radius: 0.2rem;
+  padding: 1rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+/* API reference styling */
+.api-method {
+  background: var(--md-code-bg-color);
+  border-left: 4px solid var(--md-accent-fg-color);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0 0.2rem 0.2rem 0;
+}
+
+.api-method .method-name {
+  font-weight: 700;
+  color: var(--md-accent-fg-color);
+}
+
+/* Installation steps */
+.installation-step {
+  display: flex;
+  align-items: flex-start;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--md-default-bg-color--light);
+  border-radius: 0.2rem;
+}
+
+.installation-step .step-number {
+  background: var(--md-accent-fg-color);
+  color: white;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.installation-step .step-content {
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 76.1875em) {
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    background-color: var(--md-primary-fg-color);
+    color: var(--md-primary-bg-color);
+  }
+}
+
+@media screen and (min-width: 60em) {
+  .md-sidebar--secondary:not([hidden]) ~ .md-content {
+    margin-right: 0;
+  }
+}
+
+/* Print styles */
+@media print {
+  .md-header,
+  .md-footer,
+  .md-nav,
+  .md-sidebar {
+    display: none !important;
+  }
+  
+  .md-content {
+    margin: 0 !important;
+    max-width: none !important;
+  }
+}

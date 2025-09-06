@@ -1,0 +1,20 @@
+# MkDocs and Material theme
+mkdocs>=1.5.3
+mkdocs-material>=9.4.0
+
+# Essential plugins
+mkdocs-minify-plugin>=0.7.0
+mkdocs-git-revision-date-localized-plugin>=1.2.0
+mkdocs-git-committers-plugin-2>=1.2.0
+
+# Enhanced features (using correct plugin names)
+mkdocs-material[imaging]>=9.4.0
+mkdocs-glightbox>=0.4.0
+
+# Code highlighting and extensions
+pygments>=2.16.0
+pymdown-extensions>=10.3.0
+
+# Optional dependencies for full functionality
+pillow>=10.0.0
+cairosvg>=2.7.0

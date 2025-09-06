@@ -1,6 +1,12 @@
 # Midjourney Image Tracker - Chrome Extension
 
-<p style="padding: 15px 20px 0px 5px;"> A lightweight browser extension that lets users bookmark and revisit their favorite Midjourney images in an HTML gallery, enabling consistent URL formatting and metadata support. <p> 
+<div align="center">
+  <!-- TODO: Replace with actual logo when available -->
+  <img src="./icons/icon128.png" alt="Midjourney Image Tracker Logo" width="120" height="120">
+  <br><br>
+</div>
+
+<p align="center"> A lightweight browser extension that lets users bookmark and revisit their favorite Midjourney images in an HTML gallery, enabling consistent URL formatting and metadata support. </p> 
 <img src="./docs/images/mj-extension-user-journey-diagram.png" alt="Extension Architecture Flow" align="center" width="550">
 
 
@@ -91,9 +97,13 @@ The HTML gallery export feature creates a standalone HTML file with your bookmar
 
 <br>
 
-## Dive Deeper
+## Documentation
 
-For more detailed information, see:
+### 📖 Complete Documentation Site
+Visit our comprehensive **[MkDocs documentation site](https://dagny099.github.io/mj-extension)** for detailed guides, tutorials, and technical references.
+
+### 📝 Quick Reference (Local Docs)
+For offline reading, see the local documentation:
 
 - **[Technical Overview](./docs/technical-overview.md)** - Architecture details and component interactions
 - **[Development Guide](./docs/development-guide.md)** - Setup and contribution guidelines  
